@@ -22,7 +22,6 @@ def get_contacts() -> Response:
     return jsonify({"contacts": json_contacts}), 200
 
 
-
 @app.route("/create_contact", methods=["POST"])
 def create_contact() -> Response:
     """
@@ -75,11 +74,23 @@ def update_contact(user_id) -> Response:
 
 
 @app.route("/delete_contact/<int:user_id>", methods=["DELETE"])
-def delete_contact(user_id):
+def delete_contact(user_id) -> Response:
+    """
+    DELETE request used to delete a contact
+    Args:
+        user_id (int): User ID of user to be updated
+    Returns:
+        Response: JSON response from contacts endpoint.
+    """
     contact = Contact.query.get(user_id)
 
     if not contact:
         return jsonify({"message": "User not found"}), 404
+    
+    db.session.delete(contact)
+    db.session.commit()
+
+    return jsonify({"message": f"User: {user_id} deleted!"}), 200
 
 
 if __name__ == "__main__":
