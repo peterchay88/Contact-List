@@ -18,10 +18,20 @@ const ContactList = ({contacts}) => {
             </thead>
             <tbody>
                 {contacts.map((contact) =>(
-                    <tr></tr>
+                    <tr key={contact.id}>
+                        <td>{contact.firstName}</td>
+                        <td>{contact.lastName}</td>
+                        <td>{contact.email}</td>
+                        <td>
+                            <button>Update</button>
+                            <button>Delete</button>
+                        </td>
+                    </tr>
                 ))}
             </tbody>
         </table>
     </div>
 
 }
+
+export default ContactList
