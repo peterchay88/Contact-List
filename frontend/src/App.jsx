@@ -6,6 +6,7 @@ import './App.css'
 function App() {
   const [contacts, setContacts] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [currentContact, setCurrentContact] = useState({})
   const baseUrl = "http://127.0.0.1:5000"
 
   useEffect(() => {
@@ -24,23 +25,40 @@ function App() {
    */
   const closeModal = () => {
     setIsModalOpen(false)
+    setCurrentContact({})
   }
 
   /**
-   * Open modal
+   * Open modal for creating a new contact
    */
   const openCreateModal = () => {
     if (!isModalOpen) setIsModalOpen(true)
   }
 
+  /**
+   * Open modal for editing a contact
+   * @param {*} contact contact being edited
+   * @returns 
+   */
+  const openEditModal = (contact) => {
+    if (isModalOpen) return
+    setCurrentContact(contact)
+    setIsModalOpen(true)
+  }
+
+  const onUpdate = () => {
+    closeModal()
+    fetchContacts()
+  }
+
   return (
     <>
-      <ContactList contacts={contacts} />
+      <ContactList contacts={contacts} updateContact={openEditModal} updateCallback={onUpdate} />
       <button onClick={openCreateModal}>Create New Contact</button>
       { isModalOpen && <div className='modal'>
         <div className='modal-content'>
           <span className='close' onClick={closeModal}>&times;</span>
-          <ContactForm />
+          <ContactForm existingContact={currentContact} updateCallback={onUpdate} />
         </div>
       </div>
       }
@@ -49,3 +67,4 @@ function App() {
 }
 
 export default App
+

@@ -13,10 +13,12 @@ import { useState } from "react";
  * @param {Object} props - The props object.
  * @returns {JSX.Element} A form for creating a new contact.
  */
-const ContactForm = ({}) => {
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [email, setEmail] = useState("");
+const ContactForm = ({ existingContact = {}, updateCallback} ) => {
+    const [firstName, setFirstName] = useState(existingContact.firstName || "");
+    const [lastName, setLastName] = useState(existingContact.lastName || "");
+    const [email, setEmail] = useState(existingContact.email || "");
+    const baseUrl = "http://127.0.0.1:5000/"
+    const updating = Object.entries(existingContact).length !== 0
 
     const onSubmit = async (e) => {
         e.preventDefault()
@@ -27,9 +29,9 @@ const ContactForm = ({}) => {
             email
         }
 
-        const url = "http://127.0.0.1:5000/create_contact"
+        const url = baseUrl + (updating ? `update_contact/${existingContact.id}` : "create_contact")
         const options = {
-            method: "POST",
+            method: updating ? "PATCH" : "POST",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -40,13 +42,13 @@ const ContactForm = ({}) => {
             const data = await response.json()
             alert(data.message)
         } else {
-            // Successful
+            updateCallback()
         }
     }
 
     return <form onSubmit={onSubmit}>
         <div>
-            <label htmlFor="firstName">First Name:</label>
+            <label htmlFor="firstName" className="form-label">First Name:</label>
             <input 
                 type="text" 
                 id="firstName" 
@@ -55,7 +57,7 @@ const ContactForm = ({}) => {
             />
         </div>
         <div>
-            <label htmlFor="lastName">Last Name:</label>
+            <label htmlFor="lastName" className="form-label">Last Name:</label>
             <input 
                 type="text" 
                 id="lastName" 
@@ -64,7 +66,7 @@ const ContactForm = ({}) => {
             />
         </div>
         <div>
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email" className="form-label">Email</label>
             <input 
                 type="text" 
                 id="email" 
@@ -72,7 +74,7 @@ const ContactForm = ({}) => {
                 onChange={(e) => setEmail(e.target.value)} 
             />
         </div>
-        <button type="submit">Create Contact</button>
+        <button type="submit" className="create-contact">{updating ? "Update Contact" : "Create Contact"}</button>
     </form>
 };
 
